@@ -1,0 +1,2 @@
+# Reading_journal
+読んだ本の記録とレビューをまとめたWebサイト
