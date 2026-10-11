@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="読んだ本と、おすすめしたい本の紹介">
+  <title>読書記録｜Kento</title>
+  <style>
+    :root {
+      --bg: #edf5ec;
+      --paper: #fbfdf9;
+      --ink: #242923;
+      --muted: #778477;
+      --line: #d8e4d6;
+      --accent: #496b50;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Arial, "Noto Sans JP", sans-serif;
+      line-height: 1.7;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      background: rgba(237, 245, 236, .92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .nav {
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand {
+      font-size: 1rem;
+      font-weight: 750;
+      letter-spacing: .04em;
+    }
+
+    .nav-back {
+      color: var(--accent);
+      font-size: .86rem;
+    }
+
+    main {
+      max-width: 1000px;
+      margin: auto;
+      padding: 0 24px;
+      min-height: calc(100vh - 130px);
+    }
+
+    .page-title {
+      padding: 64px 0 30px;
+    }
+
+    .kicker {
+      font-size: .72rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      font-size: clamp(2.5rem, 7vw, 4rem);
+      font-weight: 500;
+      letter-spacing: -.06em;
+      line-height: 1.15;
+      margin: 16px 0 20px;
+    }
+
+    .page-title p {
+      color: var(--muted);
+      font-size: .9rem;
+      margin: 8px 0 0;
+    }
+
+    .reading-intro {
+      max-width: 680px;
+      color: var(--muted);
+      margin: 0 0 36px;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      margin: 0 0 22px;
+      gap: 16px;
+    }
+
+    .section-head h2 {
+      font-size: 1.4rem;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .section-head span {
+      font-size: .8rem;
+      color: var(--muted);
+    }
+
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .book-card {
+      overflow: hidden;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .book-cover {
+      height: 250px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: #e2ece0;
+      color: var(--accent);
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .book-cover img {
+      display: block;
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .cover-placeholder {
+      font-size: .78rem;
+      letter-spacing: .08em;
+    }
+
+    .book-info {
+      padding: 20px;
+    }
+
+    .book-info h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 5px;
+    }
+
+    .book-author {
+      font-size: .8rem;
+      color: var(--muted);
+      margin: 0 0 14px;
+    }
+
+    .book-review {
+      font-size: .87rem;
+      margin: 0;
+      white-space: pre-line;
+    }
+
+    .book-search {
+      display: grid;
+      grid-template-columns: 1fr 220px;
+      gap: 8px 14px;
+      align-items: center;
+      padding: 18px;
+      margin: 0 0 22px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+    }
+
+    .book-search label {
+      font-size: .82rem;
+      color: var(--muted);
+    }
+
+    .book-search input,
+    .book-search select {
+      width: 100%;
+      min-width: 0;
+      padding: 11px 12px;
+      border: 1px solid var(--line);
+      border-radius: 4px;
+      background: #fff;
+      color: var(--ink);
+      font: inherit;
+      font-size: .9rem;
+    }
+
+    .book-search input:focus,
+    .book-search select:focus {
+      outline: 2px solid #a8c5a8;
+      outline-offset: 1px;
+    }
+
+    .search-result-count {
+      grid-column: 1 / -1;
+      margin: 0;
+      color: var(--muted);
+      font-size: .8rem;
+    }
+
+    .genre-tag {
+      display: inline-block;
+      margin: 0 0 10px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: #e5efe3;
+      color: var(--accent);
+      font-size: .72rem;
+    }
+
+    .book-card[hidden] {
+      display: none !important;
+    }
+
+    .no-results {
+      grid-column: 1 / -1;
+      padding: 24px;
+      color: var(--muted);
+      text-align: center;
+      background: var(--paper);
+      border: 1px dashed var(--line);
+    }
+
+    .reading-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 28px 0 44px;
+    }
+
+    .action-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--accent);
+      font-size: .86rem;
+      transition: transform .2s, border-color .2s;
+    }
+
+    .action-link:hover {
+      transform: translateY(-2px);
+      border-color: #bdc8bd;
+    }
+
+    .note {
+      font-size: .82rem;
+      color: var(--muted);
+      margin: 0 0 16px;
+    }
+
+    .frame-wrap {
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .frame {
+      width: 100%;
+      height: 750px;
+      border: 0;
+      display: block;
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .76rem;
+      padding: 22px 24px;
+      margin-top: 45px;
+    }
+
+    footer div {
+      max-width: 1000px;
+      margin: auto;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 650px) {
+      .nav {
+        padding: 15px 20px;
+      }
+
+      main {
+        padding: 0 20px;
+      }
+
+      .page-title {
+        padding: 48px 0 24px;
+      }
+
+      .book-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .book-search {
+        grid-template-columns: 1fr;
+      }
+
+      .search-result-count {
+        grid-column: auto;
+      }
+
+      .book-cover {
+        height: 230px;
+      }
+
+      .frame {
+        height: 70vh;
+        min-height: 600px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        transition: none !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <nav class="nav" aria-label="ページナビゲーション">
+      <a class="brand" href="#">PORTFOLIO</a>
+      <!-- <a class="nav-back" href="index.html">← ポートフォリオに戻る</a> -->
+    </nav>
+  </header>
+
+  <main>
+    <header class="page-title">
+      <div class="kicker">Reading journal</div>
+      <h2>読書記録</h2>
+    </header>
+
+    <p class="reading-intro">
+      本を読んだらこのサイトで公開します。<br>
+    </p>
+
+
+      <!-- 検索：タイトル・著者・感想のキーワードとジャンルで絞り込めます -->
+      <div class="book-search" role="search">
+        <label for="bookSearchInput">キーワード検索</label>
+        <input id="bookSearchInput" type="search" placeholder="タイトル・著者・感想から検索…" autocomplete="off">
+        <label for="genreFilter">ジャンル</label>
+        <select id="genreFilter">
+          <option value="all">すべてのジャンル</option>
+          <option value="小説">小説</option>
+          <option value="ミステリー">ミステリー</option>
+          <option value="ビジネス">ビジネス</option>
+          <option value="IT・技術">IT・技術</option>
+          <option value="自己啓発">自己啓発</option>
+          <option value="エッセイ">エッセイ</option>
+          <option value="その他">その他</option>
+        </select>
+        <p id="searchResultCount" class="search-result-count" aria-live="polite">3冊を表示中</p>
+      </div>
+
+      <div class="book-grid" id="bookGrid">
+        <!-- 本1：srcを表紙画像のURLに変更してください -->
+        <article class="book-card" data-genre="小説" data-searchable>
+          <div class="book-cover">
+            <img src="https://m.media-amazon.com/images/I/71glDldRV3L._SL1500_.jpg" alt="眠れない夜は羊を探しての表紙"
+              onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+            <span class="cover-placeholder" hidden>BOOK COVER<br>表紙画像を設定</span>
+          </div>
+          <div class="book-info">
+            <span class="genre-tag">小説</span>
+            <h3>眠れない夜は羊を探して</h3>
+            <p class="book-author">遠藤海人</p>
+            <p class="book-review">
+              Seattleに一緒に行った友達からのおすすめ。<br>短編がいっぱい入ってる系の本。<br>最初から最後までまるで「ドラマ」のような感じで読めました。<br>多分人生で初めて最後まで読んだ本です。</p>
+          </div>
+        </article>
+
+        <!-- 本2：srcを表紙画像のURLに変更してください -->
+        <article class="book-card" data-genre="IT・技術" data-searchable>
+          <div class="book-cover">
+            <img src="https://m.media-amazon.com/images/I/71nN4UR7yYL._SL1500_.jpg" alt="本2の表紙" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+            <span class="cover-placeholder" hidden>BOOK COVER<br>表紙画像を設定</span>
+          </div>
+          <div class="book-info">
+            <span class="genre-tag">IT・技術</span>
+            <h3>ネットワーク 入門・構築の教科書</h3>
+            <p class="book-author">のびきよ</p>
+            <p class="book-review">YCNE Basicの公式テキスト。<br>しっかりと読み込むことが重要です。技術書で初めて最後まで読んだ。</p>
+          </div>
+        </article>
+
+        <!-- 本3：srcを表紙画像のURLに変更してください -->
+        <article class="book-card" data-genre="IT・技術" data-searchable>
+          <div class="book-cover">
+            <img src="https://m.media-amazon.com/images/I/716qRrKf3WL._SL1500_.jpg" alt="本3の表紙" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+            <span class="cover-placeholder" hidden>BOOK COVER<br>表紙画像を設定</span>
+          </div>
+          <div class="book-info">
+            <span class="genre-tag">IT・技術</span>
+            <h3>[改訂新版] 3分間ネットワーク基礎講座</h3>
+            <p class="book-author">網野衛二</p>
+            <p class="book-review">ネットワークの基礎知識をしっかりと学ぶことができた１冊。<br>これがなかったら今の自分はない。</p>
+          </div>
+        </article>
+        <article class="book-card" data-genre="IT・技術" data-searchable>
+          <div class="book-cover">
+            <img src="https://m.media-amazon.com/images/I/81xGjFPw+xL._SL1500_.jpg" alt="本3の表紙" onerror="this.hidden=true; this.nextElementSibling.hidden=false;">
+            <span class="cover-placeholder" hidden>BOOK COVER<br>表紙画像を設定</span>
+          </div>
+          <div class="book-info">
+            <span class="genre-tag">IT・技術</span>
+            <h3>〔改訂新版〕 3分間ルーティング基礎講座</h3>
+            <p class="book-author">網野衛二</p>
+            <p class="book-review">ルーティングの基礎知識をしっかりと学ぶことができた１冊。<br>これがなかったら今の自分はない。</p>
+          </div>
+        </article>
+      </div>
+  </main>
+
+  <footer>
+    <div><span>© 2026 Portfolio. Created by Kento</span><span>Reading journal</span></div>
+  </footer>
+
+  <script>
+    (() => {
+      const searchInput = document.getElementById("bookSearchInput");
+      const genreFilter = document.getElementById("genreFilter");
+      const bookGrid = document.getElementById("bookGrid");
+      const resultCount = document.getElementById("searchResultCount");
+      const books = [...bookGrid.querySelectorAll("[data-searchable]")];
+
+      function filterBooks() {
+        const keyword = searchInput.value.trim().toLocaleLowerCase("ja");
+        const selectedGenre = genreFilter.value;
+        let visibleCount = 0;
+
+        books.forEach(book => {
+          const text = book.innerText.toLocaleLowerCase("ja");
+          const genreMatches = selectedGenre === "all" || book.dataset.genre === selectedGenre;
+          const keywordMatches = !keyword || text.includes(keyword);
+          const visible = genreMatches && keywordMatches;
+          book.hidden = !visible;
+          if (visible) visibleCount++;
+        });
+
+        const oldMessage = bookGrid.querySelector(".no-results");
+        if (oldMessage) oldMessage.remove();
+        if (visibleCount === 0) {
+          const message = document.createElement("p");
+          message.className = "no-results";
+          message.textContent = "該当する本が見つかりませんでした。キーワードやジャンルを変更してください。";
+          bookGrid.appendChild(message);
+        }
+        resultCount.textContent = `${visibleCount}冊を表示中（全${books.length}冊）`;
+      }
+
+      searchInput.addEventListener("input", filterBooks);
+      genreFilter.addEventListener("change", filterBooks);
+      filterBooks();
+    })();
+  </script>
+</body>
+
+</html>
